@@ -1,0 +1,115 @@
+# class를 이용해서 lol simulation을 만들어보자
+#
+# 1. requests를 사용해 champion정보를 가져온다.
+#     1. http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json
+# 2. red, blue팀에 랜덤으로 다섯개 챔피언을 생성한다(중복 허용 안됨)
+# 3. 게임을 시작한다.
+# 4. 챔피언은 상대팀의 다른 챔피언을 공격할 수 있고, hp가 0 이하로 떨어지면 사망처리되며, 사망처리되면 더이상 공격을 할 수 없다.
+# 5. 게임이 시작되면 스피드가 높은 챔피언부터 순서대로 공격을 하며, 각 챔피언의 데미지는 챔피언의 타입에 따라 (attack * attackdamage) 혹은 (magic * attackdamage)가 될 수 있다(분류기준은 자유), 각 action을 print하자(ex: Azir가 Brand에게 123의 데미지를 주었다. Brand는 사망했다!)#
+# 6. 한 팀의 챔피언이 모두 사망할때까지 5번을 반복한다.
+# 7. 게임이 종료되면 이긴 팀을 출력하자.
+# 8. 완성된 코드는 github에 업로드할 것.
+from builtins import chr
+
+import requests
+import random
+import json
+class Champ:
+    # http 응답 전문 받아오기
+    response = requests.get("http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json")
+
+    # lol api json -> python으로 받기
+    info = json.loads(response.text)
+    # ad_champ = []
+    # ap_champ = []
+    #
+    # # ap인지 ad인지 구분용
+    # for i in info['data']:
+    #     if info['data'][i]['info']['attack'] > info['data'][i]['info']['magic']:
+    #         ad_champ.append(i)
+    #     else:
+    #         ap_champ.append(i)
+
+    # 생성자, 챔피언별 필요한 특성 정의
+
+    def _init__(self):
+        print("챔피언이 생성되었습니다.")
+
+    def setdata(self, champion):
+        ad_champ = []
+        ap_champ = []
+
+        # ap인지 ad인지 구분용
+        for i in info['data']:
+            if info['data'][i]['info']['attack'] > info['data'][i]['info']['magic']:
+                ad_champ.append(i)
+            else:
+                ap_champ.append(i)
+        self.hp = info['data'][champion]['stats']['hp']
+        self.speed = info['data'][champion]['stats']['movespeed']
+        if champion in ad_champ:
+            self.hitdamage = info['data'][champion]['info']['attack'] * info['data'][champion]['stats']['attackdamage']
+        else:
+            self.hitdamage = info['data'][champion]['info']['magic'] * info['data'][champion]['stats']['attackdamage']
+
+        # self.attribute = info[]
+    #공격 행위 메소드 정의
+    def hit(self, me, foe):
+        # if self. ==
+        print(f"{me}가 {foe}에게 {self.hitdamage}의 데미지를 주었다.")
+
+#http 응답 전문 받아오기
+response = requests.get("http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json")
+
+#lol api json -> python으로 받기
+info = json.loads(response.text)
+champion = 'Ryze'
+#
+# print(info['data']['Ryze']['partype'])
+# print('Hp :', info['data'][champion]['stats']['hp'])
+# print('speed :', info['data'][champion]['stats']['movespeed'])
+# print('ad 딜량 :', info['data'][champion]['info']['attack'] * info['data'][champion]['stats']['attackdamage'])
+# print('ap 딜량 :', info['data'][champion]['info']['magic'] * info['data'][champion]['stats']['attackdamage'])
+
+
+
+
+
+#챔피언 무작위로 10개 생성해서 팀 만들기
+info_champion_keys = list(info['data'].keys())
+random.shuffle(info_champion_keys)
+champions = info_champion_keys
+
+blueteam = champions[:5]
+redteam = champions[6:11]
+
+blueteam1 = Champ()
+blueteam1.setdata(blueteam[0])
+blueteam1.hit('a', 'b')
+# blueteam2
+# blueteam3
+# blueteam4
+# blueteam5
+# redteam1
+# redteam2
+# redteam3
+# redteam4
+# redteam5
+
+
+print("Blueteam :", blueteam, "Redteam :", redteam)
+
+#게임 시작 알림
+print("소환사의 협곡에 오신 것을 환영합니다. 머하~")
+
+# # #ap인지 ad인지 구분용
+# ad_champ = []
+# ap_champ = []
+# for i in info['data']:
+#     if info['data'][i]['info']['attack'] > info['data'][i]['info']['magic']:
+#         ad_champ.append(i)
+#     else:
+#         ap_champ.append(i)
+# print('ad 챔피언 :', ad_champ)
+# print('ap 챔피언 :', ap_champ)
+#

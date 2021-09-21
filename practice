@@ -1,6 +1,6 @@
 # class를 이용해서 lol simulation을 만들어보자
 #
-# 1. requests를 사용해 champion정보를 가져온다.
+# 1. requests를 사용해 champion정보를 가져온다. -> 맨 마지막에 넣기
 #     1. http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json
 # 2. red, blue팀에 랜덤으로 다섯개 챔피언을 생성한다(중복 허용 안됨)
 # 3. 게임을 시작한다.
@@ -9,107 +9,203 @@
 # 6. 한 팀의 챔피언이 모두 사망할때까지 5번을 반복한다.
 # 7. 게임이 종료되면 이긴 팀을 출력하자.
 # 8. 완성된 코드는 github에 업로드할 것.
-from builtins import chr
 
-import requests
+
 import random
+import requests
 import json
-class Champ:
-    # http 응답 전문 받아오기
-    response = requests.get("http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json")
-
-    # lol api json -> python으로 받기
-    info = json.loads(response.text)
-    # ad_champ = []
-    # ap_champ = []
-    #
-    # # ap인지 ad인지 구분용
-    # for i in info['data']:
-    #     if info['data'][i]['info']['attack'] > info['data'][i]['info']['magic']:
-    #         ad_champ.append(i)
-    #     else:
-    #         ap_champ.append(i)
-
-    # 생성자, 챔피언별 필요한 특성 정의
-
-    def _init__(self):
-        print("챔피언이 생성되었습니다.")
-
-    def setdata(self, champion):
-        ad_champ = []
-        ap_champ = []
-
-        # ap인지 ad인지 구분용
-        for i in info['data']:
-            if info['data'][i]['info']['attack'] > info['data'][i]['info']['magic']:
-                ad_champ.append(i)
-            else:
-                ap_champ.append(i)
-        self.hp = info['data'][champion]['stats']['hp']
-        self.speed = info['data'][champion]['stats']['movespeed']
-        if champion in ad_champ:
-            self.hitdamage = info['data'][champion]['info']['attack'] * info['data'][champion]['stats']['attackdamage']
-        else:
-            self.hitdamage = info['data'][champion]['info']['magic'] * info['data'][champion]['stats']['attackdamage']
-
-        # self.attribute = info[]
-    #공격 행위 메소드 정의
-    def hit(self, me, foe):
-        # if self. ==
-        print(f"{me}가 {foe}에게 {self.hitdamage}의 데미지를 주었다.")
-
-#http 응답 전문 받아오기
+# 1.1 http 응답 전문 받아오기
 response = requests.get("http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json")
 
-#lol api json -> python으로 받기
+# 1.2 lol api json -> python으로 받기
 info = json.loads(response.text)
-champion = 'Ryze'
-#
-# print(info['data']['Ryze']['partype'])
-# print('Hp :', info['data'][champion]['stats']['hp'])
-# print('speed :', info['data'][champion]['stats']['movespeed'])
-# print('ad 딜량 :', info['data'][champion]['info']['attack'] * info['data'][champion]['stats']['attackdamage'])
-# print('ap 딜량 :', info['data'][champion]['info']['magic'] * info['data'][champion]['stats']['attackdamage'])
+
+#챔피언 타입 구분(ad or ap)
+ad_champ = []
+ap_champ = []
+for i in info['data']:
+    if info['data'][i]['info']['attack'] > info['data'][i]['info']['magic']:
+        ad_champ.append(i)
+    else:
+        ap_champ.append(i)
+# #팀 클래스
+# # class Team:
+# #     def __init__(self, blueteam, redteam):
+# #         self.blueteam = blueteam
+# #         self.redteam = redteam
+# #
+# # # 특정팀 죽은 사람 카운팅
+# #     def countdeadmember(self, team):
+# #         deathmember = []
+# #         for i in team:
+# #             if i.count("death"):
+# #                 deathmember.append(i)
+# #         return len(deathmember)
+# #
+# #     def countalivemember(self, team):
+# #         alivemember = []
+# #         for i in team:
+# #             if i.count("alive"):
+# #                 alivemember.append(i)
+# #         return len(alivemember)
+# #
+# #     def decideattacksequence(self, team1, team2):
+# #         totalmember = []
+# #         totalmember = team1 + team2
+# #         while i < len(totalmember):
+# #
+# #             for j in range(len(list)):
+# #                 if i == list[j][1]:
+# #                     test_sequence.append(list[j])
+# #                     i += 1
+# #                 else:
+# #                     pass
+# #
+# #     def Alldeathornot(self, team):
+# #         if self.countdeadmember(self, team) == len(team):
+# #             return "Alldeath"
+# #         else:
+# #             return "Nope"
+# #
+# #     def checkteamcoincide(self, champion1team, champion2team):
+# #         if champion1team == champion2team:
+# #             return "coincidency"
+# #         else:
+# #             return "incoincidency"
+
+#챔피언 클래스
+#챔피언클래스
+class Champion:
+    def __init__(self, team, championname):
+        self.team = team
+        self.name = championname
+        self.hp = info['data'][self.name]['stats']['hp']
+        self.speed = info['data'][self.name]['stats']['movespeed']
+        self.attack = info['data'][self.name]['info']['attack']
+        self.magic = info['data'][self.name]['info']['magic']
+        self.deathornot = "alive"
+        if self.name in ad_champ:
+            self.champtype = "ad"
+            self.hitdamage = info['data'][self.name]['info']['attack'] + info['data'][self.name]['stats']['attackdamage']
+        else:
+            self.champtype = "ap"
+            self.hitdamage = info['data'][self.name]['info']['magic'] + info['data'][self.name]['stats']['attackdamage']
+
+    def beattacked(self, foename, foedamage):
+        #해당 챔피언이 사망자인지 아닌지
+        if self.hp > 0:
+            self.hp -= foedamage
+            print("{}가 {}에게 {}만큼 데미지를 입혔습니다. {} hp : {}".format(foename, self.name, foedamage, self.name, self.hp))
+            if self.hp < 0:
+                self.deathornot = "death"
+                print(f"{self.name} 사망")
+                return "death"
+        else:
+            return "죽은 자는 말이 없다"
 
 
-
-
-
-#챔피언 무작위로 10개 생성해서 팀 만들기
+#2. 챔피언 무작위로 10개 생성해서 팀 만들기
 info_champion_keys = list(info['data'].keys())
 random.shuffle(info_champion_keys)
 champions = info_champion_keys
-
 blueteam = champions[:5]
 redteam = champions[6:11]
 
-blueteam1 = Champ()
-blueteam1.setdata(blueteam[0])
-blueteam1.hit('a', 'b')
-# blueteam2
-# blueteam3
-# blueteam4
-# blueteam5
-# redteam1
-# redteam2
-# redteam3
-# redteam4
-# redteam5
+bluechamp1 = Champion("blue", blueteam[0])
+bluechamp2 = Champion("blue", blueteam[1])
+bluechamp3 = Champion("blue", blueteam[2])
+bluechamp4 = Champion("blue", blueteam[3])
+bluechamp5 = Champion("blue", blueteam[4])
+redchamp1 = Champion("red", redteam[0])
+redchamp2 = Champion("red", redteam[1])
+redchamp3 = Champion("red", redteam[2])
+redchamp4 = Champion("red", redteam[3])
+redchamp5 = Champion("red", redteam[4])
 
 
-print("Blueteam :", blueteam, "Redteam :", redteam)
 
-#게임 시작 알림
-print("소환사의 협곡에 오신 것을 환영합니다. 머하~")
+#5.1 공격 순서를 정한다.(각리스트의 3번째에 순서 기재)
+speedlist = [[bluechamp1.speed, bluechamp1.name, bluechamp1.hitdamage], [bluechamp2.speed, bluechamp2.name, bluechamp2.hitdamage], [bluechamp3.speed, bluechamp3.name, bluechamp3.hitdamage], [bluechamp4.speed, bluechamp4.name, bluechamp4.hitdamage], [bluechamp5.speed, bluechamp5.name, bluechamp5.hitdamage],
+        [redchamp1.speed, redchamp1.name, redchamp1.hitdamage], [redchamp2.speed, redchamp2.name, redchamp2.hitdamage], [redchamp3.speed, redchamp3.name, redchamp3.hitdamage], [redchamp4.speed, redchamp4.name, redchamp4.hitdamage], [redchamp5.speed, redchamp5.name, redchamp5.hitdamage]]
+speedcq = []
+tmp_speed = sorted(speedlist)
+tmp_speed.reverse()
 
-# # #ap인지 ad인지 구분용
-# ad_champ = []
-# ap_champ = []
-# for i in info['data']:
-#     if info['data'][i]['info']['attack'] > info['data'][i]['info']['magic']:
-#         ad_champ.append(i)
-#     else:
-#         ap_champ.append(i)
-# print('ad 챔피언 :', ad_champ)
-# print('ap 챔피언 :', ap_champ)
-#
+for i in speedlist:
+    speedcq.append(tmp_speed.index(i)+1)
+for i in range(len(speedlist)):
+    speedlist[i].append(speedcq[i])
+
+#5.2 챔피언 스피드 순서대로 리스트 재정렬하기
+attacksq = []
+i = 1
+while i < len(speedlist):
+    for j in range(len(speedlist)):
+        if i == speedlist[j][3]:
+            attacksq.append(speedlist[j])
+            i += 1
+
+#3. 게임을 시작한다.
+print("게임을 시작합니다")
+print(blueteam, redteam)
+print(attacksq)
+Alldeath = False
+allattackcount = 0
+while Alldeath == False:
+    for turn in range(len(attacksq)):
+        if attacksq[turn][1] in redteam and Alldeath == False:
+            attackcount = 0
+
+            while attackcount < 5:
+                bluechamp1.beattacked(attacksq[turn][1], attacksq[turn][2])
+                attackcount += 1
+                if bluechamp1.deathornot == "death":
+                    bluechamp2.beattacked(attacksq[turn][1], attacksq[turn][2])
+                    attackcount += 1
+                    if bluechamp2.deathornot == "death":
+                        bluechamp3.beattacked(attacksq[turn][1], attacksq[turn][2])
+                        attackcount += 1
+                        if bluechamp3.deathornot == "death":
+                            bluechamp4.beattacked(attacksq[turn][1], attacksq[turn][2])
+                            attackcount += 1
+                            if bluechamp4.deathornot == "death":
+                                bluechamp5.beattacked(attacksq[turn][1], attacksq[turn][2])
+                                attackcount += 1
+                                if bluechamp5.deathornot != "death":
+                                    bluechamp5.beattacked(attacksq[turn][1], attacksq[turn][2])
+                                    attackcount += 1
+                                else:
+                                    print("레드 승리")
+                                    Alldeath = True
+                                    break
+
+
+        elif Alldeath == False:
+            attackcount = 0
+            while attackcount < 5:
+                redchamp1.beattacked(attacksq[turn][1], attacksq[turn][2])
+                attackcount += 1
+                if redchamp1.deathornot == "death":
+                    redchamp2.beattacked(attacksq[turn][1], attacksq[turn][2])
+                    attackcount += 1
+                    if redchamp2.deathornot == "death":
+                        redchamp3.beattacked(attacksq[turn][1], attacksq[turn][2])
+                        attackcount += 1
+                        if redchamp3.deathornot == "death":
+                            redchamp4.beattacked(attacksq[turn][1], attacksq[turn][2])
+                            attackcount += 1
+                            if redchamp4.deathornot == "death":
+                                redchamp5.beattacked(attacksq[turn][1], attacksq[turn][2])
+                                attackcount += 1
+                                if redchamp5.deathornot != "death":
+                                    redchamp5.beattacked(attacksq[turn][1], attacksq[turn][2])
+                                    attackcount += 1
+                                else:
+                                    print("블루 승리")
+                                    Alldeath = True
+                                    break
+
+
+
+
+

@@ -28,35 +28,37 @@ import json
 import random
 
 class Game:
-    #requests, json으로 챔피언 정보 갖고 오기
-    champion_info = json.loads(requests.get("http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json").text)["data"]
-    #무작위로 챔피언 10개 생성 및 5개씩 redteam, blueteam 생성
-    data = random.sample(list(champion_info), 10)
+
 
     def __init__(self):
-        self.redteam = Team(self.data[0:5])
-        self.blueteam = Team(self.data[5:10])
+        # requests, json으로 챔피언 정보 갖고 오기
+        champion_info = json.loads(requests.get("http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json").text)["data"]
+        # 무작위로 챔피언 10개 생성 및 5개씩 redteam, blueteam 생성
+        data = random.sample(list(champion_info), 10)
+        self.redteam = Team(data[0:5])
+        self.blueteam = Team(data[5:10])
 
 #게임 스따또!
     def gamestart(self):
-        while self.redteam.all_death() or self.redteam.all_death():
+        while not (self.redteam.all_death() and self.blueteam.all_death()):
             for champion in self._attack_order() :
-                if champion in self.redteam:
-                    foe = random.choice(self.blueteam)
+                if champion in self.redteam.get_list():
+                    foe = random.choice(self.blueteam.get_list())
                     foe.set_minus_hp(champion.attack(foe))
                 else:
-                    foe = random.choice(self.redteam)
+                    foe = random.choice(self.redteam.get_list())
+                    champion.attack(foe)
                     foe.set_minus_hp(champion.attack(foe))
 
 #공격 순서 정하기
     def _attack_order(self):
-        all_champion = self.redteam + self.blueteam
+        all_champion = self.redteam.get_list() + self.blueteam.get_list()
         champion_and_speed = []
         attack_order = []
-        for champion in all_chamion:
-            champion_and_speed.append(champion, champion.getmovespeed())
-        sorted(champion_and_speed, key=lambda x: x[2], reverse=True)
-#       sorted(champion_and_speed, key=lambda x: -x[2])
+        for champion in all_champion:
+            champion_and_speed.append([champion, champion.get_movespeed()])
+        sorted(champion_and_speed, key=lambda x: x[1], reverse=True)
+#       sorted(champion_and_speed, key=lambda x: -x[1])
         i = 0
         while i < len(champion_and_speed):
             attack_order.append(champion_and_speed[i][0])
@@ -69,6 +71,9 @@ class Team:
         for champion in champions:
             self.team = []
             self.team.append(Champion(champion))
+
+    def get_list(self):
+        return self.team
 
     def all_death(self):
         for champion in self.team:
@@ -92,7 +97,7 @@ class Champion:
             self.damage = self.champion_info[champion]["stats"]["attackdamage"] + self.magic
 
     def attack(self, foe):
-        print(f"{self.champion}이 {foe}를 {self.damage}만큼 공격하였습니다.")
+        print("{}이 {}를 {}만큼 공격하였습니다.".format(self.champion, foe, self.damage))
         return self.damage
 
     def set_minus_hp(self, damage):
@@ -102,7 +107,7 @@ class Champion:
         return self.hp
 
     def get_movespeed(self):
-        return self.speed
+        return self.movespeed
 
 game = Game()
 game.gamestart()

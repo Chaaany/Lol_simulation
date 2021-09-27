@@ -1,0 +1,83 @@
+import requests
+import json
+import random
+
+class Game:
+    #requests, json으로 챔피언 정보 갖고 오기
+    champion_info = json.loads(requests.get("http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json").text)["data"]
+    #무작위로 챔피언 10개 생성 및 5개씩 redteam, blueteam 생성
+    data = random.sample(list(champion_info), 10)
+
+    def __init__(self):
+        self.redteam = Team(self.data[0:5])
+        self.blueteam = Team(self.data[5:10])
+
+#게임 스따또!
+    def gamestart(self):
+        while self.redteam.all_death() or self.redteam.all_death():
+            for champion in self._attack_order() :
+                if champion in self.redteam:
+                    foe = random.choice(self.blueteam)
+                    foe.set_minus_hp(champion.attack(foe))
+                else:
+                    foe = random.choice(self.redteam)
+                    foe.set_minus_hp(champion.attack(foe))
+
+#공격 순서 정하기
+    def _attack_order(self):
+        all_champion = self.redteam + self.blueteam
+        champion_and_speed = []
+        attack_order = []
+        for champion in all_chamion:
+            champion_and_speed.append(champion, champion.getmovespeed())
+        sorted(champion_and_speed, key=lambda x: x[2], reverse=True)
+#       sorted(champion_and_speed, key=lambda x: -x[2])
+        i = 0
+        while i < len(champion_and_speed):
+            attack_order.append(champion_and_speed[i][0])
+            i += 1
+
+        return attack_order
+
+class Team:
+    def __init__(self, champions):
+        for champion in champions:
+            self.team = []
+            self.team.append(Champion(champion))
+
+    def all_death(self):
+        for champion in self.team:
+            if champion.get_hp() > 0:
+                return False
+            else:
+                return True
+
+class Champion:
+    champion_info = json.loads(requests.get("http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json").text)["data"]
+
+    def __init__(self, champion):
+        self.champion = champion
+        self.movespeed = self.champion_info[champion]["stats"]["movespeed"]
+        self.hp = self.champion_info[champion]["stats"]["movespeed"]
+        self.attack = self.champion_info[champion]["info"]["attack"]
+        self.magic = self.champion_info[champion]["info"]["magic"]
+        if self.attack > self.magic:
+            self.damage = self.champion_info[champion]["stats"]["attackdamage"] + self.attack
+        else:
+            self.damage = self.champion_info[champion]["stats"]["attackdamage"] + self.magic
+
+    def attack(self, foe):
+        print(f"{self.champion}이 {foe}를 {self.damage}만큼 공격하였습니다.")
+        return self.damage
+
+    def set_minus_hp(self, damage):
+        self.hp -= damage
+
+    def get_hp(self):
+        return self.hp
+
+    def get_movespeed(self):
+        return self.speed
+
+game = Game()
+game.gamestart()

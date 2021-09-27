@@ -1,3 +1,28 @@
+# 과제 1
+# 자바 스타일로 코딩(모든 것을 객체화하라)
+# 실행 스크립트 빼고
+# def main():
+#   game = Game()
+#   game.start()
+#
+# main()
+# 클래스는 별도의 파일로 생성해서 호출하라
+#
+# 과제 2
+# 전역변수 안 쓰기
+#
+# class를 이용해서 lol simulation을 만들어보자
+#
+# 1. requests를 사용해 champion정보를 가져온다.
+#     1. http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json
+# 2. red, blue팀에 랜덤으로 다섯개 챔피언을 생성한다(중복 허용 안됨)
+# 3. 게임을 시작한다.
+# 4. 챔피언은 상대팀의 다른 챔피언을 공격할 수 있고, hp가 0 이하로 떨어지면 사망처리되며, 사망처리되면 더이상 공격을 할 수 없다.
+# 5. 게임이 시작되면 스피드가 높은 챔피언부터 순서대로 공격을 하며, 각 챔피언의 데미지는 챔피언의 타입에 따라 (attack * attackdamage) 혹은 (magic * attackdamage)가 될 수 있다(분류기준은 자유), 각 action을 print하자(ex: Azir가 Brand에게 123의 데미지를 주었다. Brand는 사망했다!)
+# 6. 한 팀의 챔피언이 모두 사망할때까지 반복한다.
+# 7. 게임이 종료되면 이긴 팀을 출력하자.
+# 8. 완성된 코드는 github에 업로드할 것.
+
 import requests
 import json
 import random
@@ -58,7 +83,7 @@ class Champion:
     def __init__(self, champion):
         self.champion = champion
         self.movespeed = self.champion_info[champion]["stats"]["movespeed"]
-        self.hp = self.champion_info[champion]["stats"]["movespeed"]
+        self.hp = self.champion_info[champion]["stats"]["hp"]
         self.attack = self.champion_info[champion]["info"]["attack"]
         self.magic = self.champion_info[champion]["info"]["magic"]
         if self.attack > self.magic:
@@ -81,3 +106,7 @@ class Champion:
 
 game = Game()
 game.gamestart()
+
+
+
+

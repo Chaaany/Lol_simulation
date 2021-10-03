@@ -38,11 +38,12 @@ class Game:
             for champion in self.set_attack_sq(self.redteam.get_member(), self.blueteam.get_member()):
                 if champion in self.redteam.get_member():
                     foe = random.choice(self.blueteam.get_member())
-                    foe.set_hp(champion.doattack(foe.get_name()))
+                    foe.set_hp(champion.doattack(foe))
                 else:
                     foe = random.choice(self.redteam.get_member())
-                    foe.set_hp(champion.doattack(foe.get_name()))
+                    foe.set_hp(champion.doattack(foe))
             fight_count += 1
+
         if self.redteam.are_team_all_dead() == True:
             print("게임이 종료 되었습니다. blueteam이 승리하였습니다.")
         else:

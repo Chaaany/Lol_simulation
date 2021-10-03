@@ -12,17 +12,19 @@
 # 6. 한 팀의 챔피언이 모두 사망할때까지 반복한다.
 # 7. 게임이 종료되면 이긴 팀을 출력하자.
 # 8. 완성된 코드는 github에 업로드할 것.
-
+import json
+import requests
 
 class Champion:
 # 챔피언 생성자
-    def __init__(self, name):
-        self.name = name
-        self.hp = 0
-        self.attack = 0
-        self.magic = 0
-        self.movespeed = 0
-        self.damage = 0
+    def __init__(self, champion_name):
+        champion_info = json.loads(requests.get("http://ddragon.leagueoflegends.com/cdn/11.17.1/data/ko_KR/champion.json").text)["data"]
+        self.name = champion_name
+        self.hp = champion_info[champion_name]["stats"]["hp"]
+        self.attack = champion_info[champion_name]["info"]["attack"]
+        self.magic = champion_info[champion_name]["info"]["magic"]
+        self.movespeed = champion_info[champion_name]["stats"]["movespeed"]
+        self.damage = champion_info[champion_name]["stats"]["attackdamage"]
         self.dead = False
 
 #각 속성 값 getter
@@ -44,13 +46,14 @@ class Champion:
 
     def get_is_dead(self):
         return self.dead
+
 # hp 변화량 적용, hp 변화량에 따른 사망여부 처리
     def set_hp(self, hp):
         self.hp -= hp
         if self.hp <= 0:
             self.is_dead = True
 # 행위 정의
-    def attack(self, foename):
+    def doattack(self, foename):
         print(f"{self.name}님께서 {foename}님에게 {self.get_hitdamage()}만큼 피해를 입혔습니다.")
         return self.get_hitdamage()
 

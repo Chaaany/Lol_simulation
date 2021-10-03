@@ -50,5 +50,6 @@ class Team:
     def are_team_all_dead(self):
         for champion in self.get_member():
             if champion.get_is_dead() == True:
-                return
+                return champion.get_is_dead()
+
         return False

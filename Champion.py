@@ -51,10 +51,10 @@ class Champion:
     def set_hp(self, hp):
         self.hp -= hp
         if self.hp <= 0:
-            self.is_dead = True
+            self.dead = True
 # 행위 정의
     def doattack(self, foename):
-        print(f"{self.name}님께서 {foename}님에게 {self.get_hitdamage()}만큼 피해를 입혔습니다.")
+        print(f"{self.name}님께서 {foename.get_name()}님에게 {self.get_hitdamage()}만큼 피해를 입혔습니다. {foename.get_name()}님의 남은 hp : {foename.get_hp()}")
         return self.get_hitdamage()
 
 

@@ -31,16 +31,18 @@ class Game:
     # 게임 시작
     def game_start(self):
         print("게임이 시작되었습니다.")
-        while self.redteam.are_team_all_dead() or self.blueteam.are_team_all_dead():
-            for champion in self.set_attack_sq(self.redteam.get_member_name(), self.blueteamget_member_name()):
-                if champion in self.redteam.get_member_name():
-                    foe = random.choice(self.blueteam.get_member_name())
-                    champion.attack(foe)
-                    foe.set_hp(champion.get_hitdamage())
+        print("redteam : ", self.redteam.get_member_name(), "/ blueteam : ", self.blueteam.get_member_name())
+        fight_count = 1
+        while not(self.redteam.are_team_all_dead() or self.blueteam.are_team_all_dead()):
+            print(fight_count, "번째 싸움 시작\n")
+            for champion in self.set_attack_sq(self.redteam.get_member(), self.blueteam.get_member()):
+                if champion in self.redteam.get_member():
+                    foe = random.choice(self.blueteam.get_member())
+                    foe.set_hp(champion.doattack(foe.get_name()))
                 else:
-                    foe = random.choice(self.redteam.get_member_name())
-                    champion.attack(foe)
-                    foe.set_hp(champion.get_hitdamage())
+                    foe = random.choice(self.redteam.get_member())
+                    foe.set_hp(champion.doattack(foe.get_name()))
+            fight_count += 1
         if self.redteam.are_team_all_dead() == True:
             print("게임이 종료 되었습니다. blueteam이 승리하였습니다.")
         else:
@@ -52,16 +54,21 @@ class Game:
         all_champion = team1 + team2
         champion_and_speed = []
         attack_order = []
+        attack_order_name = []
         for champion in all_champion:
-            champion_and_speed.append([champion, Champion(champion).get_movespeed()])
+            champion_and_speed.append([champion, champion.get_movespeed()])
         sorted(champion_and_speed, key=lambda x: x[1], reverse=True)
-        #       sorted(champion_and_speed, key=lambda x: -x[1])
+        i = 0
+        while i < len(champion_and_speed):
+            attack_order_name.append(champion_and_speed[i][0].get_name())
+            i += 1
+
         i = 0
         while i < len(champion_and_speed):
             attack_order.append(champion_and_speed[i][0])
             i += 1
-        print("공격순서는 {attack_order}입니다.")
-        return attack_order
 
+        print(f"공격순서는 {attack_order_name}입니다.")
+        return attack_order
 
 
